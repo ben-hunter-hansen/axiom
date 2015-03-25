@@ -1,5 +1,4 @@
 # Axiom: A web MVC framework for Go.
-- - -
 
 ### Disclaimer
 - - -
