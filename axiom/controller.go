@@ -14,14 +14,18 @@ type Controller struct {
 	Name    string
 	Request *http.Request
 	Out     http.ResponseWriter
-	Actions []Action
+	Actions map[string]Action
+}
+
+func (c *Controller) AppendAction(a Action) {
+	c.Actions[a.Name] = a
 }
 
 // Returns a named controller with an action list
-func NewController(name string, a []Action) *Controller {
+func NewController(name string) *Controller {
 	return &Controller{
 		Name:    name,
-		Actions: a,
+		Actions: make(map[string]Action),
 	}
 }
 

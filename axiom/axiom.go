@@ -13,13 +13,13 @@ func (r Route) ServeHTTP(w http.ResponseWriter, req *http.Request) {
 	reqUrl := req.URL.Path
 	r.Controller.Request = req
 	r.Controller.Out = w
-	for _, action := range r.Controller.Actions {
-		if reqUrl == r.Url+action.Name {
+	for name, action := range r.Controller.Actions {
+		if reqUrl == r.Url+name {
 			status, err := action.Handler(r.Controller)
 			if err != nil {
 				switch status {
 				default:
-					http.ServeFile(w, req, "views/500.html")
+					http.ServeFile(w, req, "500.html")
 				}
 			}
 			return
@@ -31,9 +31,7 @@ func (r Route) ServeHTTP(w http.ResponseWriter, req *http.Request) {
 func Bind(r []Route) *http.ServeMux {
 	mux := http.NewServeMux()
 	for _, route := range r {
-		if route.Name == "Default" { //holy shit un-fuck this ASAP
-			mux.Handle("/", http.RedirectHandler(route.Url+route.Controller.Actions[0].Name, 301))
-		}
+		// TODO: handle default "/"
 		mux.Handle(route.Url, route)
 	}
 	return mux

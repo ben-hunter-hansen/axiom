@@ -7,7 +7,7 @@ import (
 	"axiom"
 )
 
-// Test 3/24/15 9:45 PM CST
+// Test 3/25/15 12:05 PM CST
 
 // Should be able to define a handler anywhere.
 func index(c *axiom.Controller) (int, error) {
@@ -36,14 +36,13 @@ func main() {
 
 	// Create a controller and assign the actions
 	// mapped to: /home/{action}
-	homeCtrl := axiom.NewController("home", []axiom.Action{
-		*indexAction,
-		*helloAction,
-		*anotherAction,
-	})
+	homeCtrl := axiom.NewController("home")
+	homeCtrl.AppendAction(*indexAction)
+	homeCtrl.AppendAction(*helloAction)
+	homeCtrl.AppendAction(*anotherAction)
 
 	// Create a route and assign a controller to it, then add to route table
-	route := axiom.NewRoute("Default", homeCtrl)
+	route := axiom.NewRoute("Default", homeCtrl) // Default route ignored, must fix
 	routes := []axiom.Route{*route}
 
 	// Register route table and controllers
