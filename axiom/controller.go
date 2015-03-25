@@ -17,6 +17,7 @@ type Controller struct {
 	Actions map[string]Action
 }
 
+// Adds an action to the controller
 func (c *Controller) AppendAction(a Action) {
 	c.Actions[a.Name] = a
 }
@@ -40,6 +41,7 @@ type Action struct {
 	Handler func(*Controller) (int, error)
 }
 
+// Creates a new action with a name and a method
 func NewAction(name string, method string) *Action {
 	return &Action{
 		Name:   name,

@@ -11,59 +11,71 @@ and ability to apply custom action handlers to each controller.
 ### Example
 - - - 
 
+#### App main
 ```
 package main
 
 import (
-	//"fmt"
-	"net/http"
-
 	"axiom"
+	"axiom.tests/controllers"
 )
 
-// Test 3/25/15 12:05 PM CST
-
-// Should be able to define a handler anywhere.
-func index(c *axiom.Controller) (int, error) {
-	http.ServeFile(c.Out, c.Request, "views/index.html") // OK
-	return http.StatusOK, nil                            // OK
-}
-
-// Should set up a route with a controller with a couple actions
+// Controllers should be defined in their appropriate sub directory
 func main() {
-	indexAction := axiom.NewAction("welcome", "GET") // mapped to: GET /welcome
-	indexAction.Handler = index
 
-	// Create a couple actions
-	helloAction := axiom.NewAction("hello", "GET")         //mapped to: GET /hello
-	anotherAction := axiom.NewAction("hello/again", "GET") //mapped to: GET /hello/again
+	// Create a route and assign a controller to it
+	route := axiom.NewRoute("Default", controllers.HomeController)
 
-	// Assign a couple anonymous function handlers
-	helloAction.Handler = func(c *axiom.Controller) (int, error) {
-		http.ServeFile(c.Out, c.Request, "views/hello.html")
-		return http.StatusOK, nil
-	}
-	anotherAction.Handler = func(c *axiom.Controller) (int, error) {
-		http.ServeFile(c.Out, c.Request, "views/hello2.html")
-		return http.StatusOK, nil
-	}
-
-	// Create a controller and assign the actions
-	// mapped to: /home/{action}
-	homeCtrl := axiom.NewController("home")
-	homeCtrl.AppendAction(*indexAction)
-	homeCtrl.AppendAction(*helloAction)
-	homeCtrl.AppendAction(*anotherAction)
-
-	// Create a route and assign a controller to it, then add to route table
-	route := axiom.NewRoute("Default", homeCtrl) // Default route ignored, must fix
+	// Add to the route table
 	routes := []axiom.Route{*route}
 
-	// Register route table and controllers
+	// Register route table
 	mux := axiom.Bind(routes)
+
+	// Run the app
 	axiom.Serve(mux) // OK
 }
+```
+#### Example controller
+```
+package controllers
 
+import (
+	"axiom"
+	"net/http"
+)
+
+// Each controller should be defined in it's own file within the
+// controllers package.
+var HomeController = &axiom.Controller{
+	Name: "home",
+	Actions: map[string]axiom.Action{
+		"welcome": axiom.Action{
+			Name:   "welcome",
+			Method: "GET",
+			Handler: func(c *axiom.Controller) (int, error) {
+				http.ServeFile(c.Out, c.Request, "views/index.html")
+				return http.StatusOK, nil
+			},
+		},
+		"hello": axiom.Action{
+			Name:   "hello",
+			Method: "GET",
+			Handler: func(c *axiom.Controller) (int, error) {
+				http.ServeFile(c.Out, c.Request, "views/hello.html")
+				return http.StatusOK, nil
+			},
+		},
+		"hello/again": axiom.Action{
+			Name:   "hello/again",
+			Method: "GET",
+			Handler: func(c *axiom.Controller) (int, error) {
+				http.ServeFile(c.Out, c.Request, "views/hello2.html")
+				return http.StatusOK, nil
+			},
+		},
+	},
+}
 ```
 
 ### Contributing
