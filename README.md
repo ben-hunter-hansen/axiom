@@ -17,23 +17,20 @@ package main
 
 import (
 	"axiom"
-	"axiom.tests/controllers"
+	"axiom.tests/config"
 )
 
-// Controllers should be defined in their appropriate sub directory
+// Entry point of the app.
+// routes are defined under config/routes.go
+// controllers are defined under the controllers directory
+// e.g controllers/homecontroller.go
 func main() {
 
-	// Create a route and assign a controller to it
-	route := axiom.NewRoute("Default", controllers.HomeController)
-
-	// Add to the route table
-	routes := []axiom.Route{*route}
-
 	// Register route table
-	mux := axiom.Bind(routes)
+	mux := axiom.Bind(config.RouteConfig)
 
 	// Run the app
-	axiom.Serve(mux) // OK
+	axiom.Serve(mux)
 }
 ```
 #### Example controller
@@ -74,6 +71,24 @@ var HomeController = &axiom.Controller{
 				return http.StatusOK, nil
 			},
 		},
+	},
+}
+```
+#### Route configuration
+```
+package config
+
+import (
+	"axiom"
+	"axiom.tests/controllers"
+)
+
+// Route configuration should be defined here.
+var RouteConfig = []axiom.Route{
+	axiom.Route{
+		Name:       "Default",
+		Url:        "/",
+		Controller: controllers.HomeController,
 	},
 }
 ```

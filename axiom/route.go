@@ -2,49 +2,57 @@ package axiom
 
 import (
 	"net/http"
+	"strings"
 )
 
-// A route has a name, base URL, child routes, and a controller.
+// A route has a name, base URL, and a controller
 type Route struct {
 	Name       string
 	Url        string
-	Children   []string
 	Controller *Controller
-}
-
-// Creates a new route for a given controller
-func NewRoute(name string, c *Controller) *Route {
-	url := "/" + c.Name + "/"
-	var children []string
-	for k, _ := range c.Actions {
-		children = append(children, k)
-	}
-	return &Route{
-		Name:       name,
-		Url:        url,
-		Children:   children,
-		Controller: c,
-	}
 }
 
 // The ServeHTTP method of a Route will receive all requests that
 // fall under it's base URI component and will determine the appropriate
 // action to invoke.
+//
+// TOOD: Need to find a smarter way to handle this mechanism
 func (r Route) ServeHTTP(w http.ResponseWriter, req *http.Request) {
-	reqUrl := req.URL.Path
 	r.Controller.Request = req
+	r.Controller.Params = RequestParams{
+		Query: req.URL.Query(),
+	}
 	r.Controller.Out = w
-	for name, action := range r.Controller.Actions {
-		if reqUrl == r.Url+name {
-			status, err := action.Handler(r.Controller)
-			if err != nil {
-				switch status {
-				default:
-					http.ServeFile(w, req, "500.html")
-				}
-			}
-			return
+
+	act := findAction(req.URL.Path, r)
+	status, err := act.Handler(r.Controller)
+
+	if err != nil {
+		switch status {
+		case http.StatusNotFound:
+			http.ServeFile(w, req, "views/404.html")
+		case http.StatusInternalServerError:
+			http.ServeFile(w, req, "views/500.html")
 		}
 	}
-	http.ServeFile(w, req, "views/404.html")
+}
+
+// One-timer for figuring out which action to take.
+// Hopefully this will be gone soon
+func findAction(url string, r Route) Action {
+	if url == r.Url {
+		def := r.Controller.ActionDefault
+		return r.Controller.Actions[def]
+	}
+	for name, action := range r.Controller.Actions {
+		actionPath := r.Url + r.Controller.Name + "/" + name
+		if url == strings.ToLower(actionPath) {
+			return action
+		}
+	}
+	return Action{
+		Handler: func(c *Controller) (int, error) {
+			return http.StatusNotFound, nil
+		},
+	}
 }
