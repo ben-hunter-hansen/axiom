@@ -1,13 +1,15 @@
 # Axiom: A web MVC framework for Go.
 
 ### Progress
-- - 
+- - -
+
 This is a brand new pet project, only a few days old.
 
 So far, we are able to:
-1. Define routes, controllers, handlers
-2. Render views
-3. Render JSON
+
+* Define routes, controllers, handlers
+* Render views
+* Render JSON
 
 
 ### Example
