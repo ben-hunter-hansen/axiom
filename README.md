@@ -1,12 +1,14 @@
 # Axiom: A web MVC framework for Go.
 
-### Disclaimer
-- - -
-
+### Progress
+- - 
 This is a brand new pet project, only a few days old.
 
-The only existing functionality is a very basic "route table",
-and ability to apply custom action handlers to each controller.
+So far, we are able to:
+1. Define routes, controllers, handlers
+2. Render views
+3. Render JSON
+
 
 ### Example
 - - - 
@@ -35,32 +37,36 @@ func main() {
 ```
 #### Example controller
 ```
+package controllers
+
+import (
+	"axiom"
+)
+
 // Set up a controller called 'home' with three actions
-// 1. home/welcome
-// 2. home/query
-// 3. home/hello
+// 1. home/welcome -> View
+// 2. home/fetch -> JSON
+// 3. home/hello -> View
 var HomeController = &axiom.Controller{
 	Name: "home",
 	Actions: map[string]axiom.Action{
 		"welcome": axiom.Action{
 			Method: "GET",
-			Handler: func(c *axiom.Controller) (int, error) {
-				http.ServeFile(c.Out, c.Request, "views/index.html")
-				return http.StatusOK, nil
+			Handler: func(c *axiom.Controller) axiom.ActionResult {
+				return axiom.View("index") // Should match view/index.html
 			},
 		},
-		"query": axiom.Action{
+		"fetch": axiom.Action{
 			Method: "GET",
-			Handler: func(c *axiom.Controller) (int, error) {
-				fmt.Fprintf(c.Out, "id: %s", c.Params.Query.Get("id"))
-				return http.StatusOK, nil
+			Handler: func(c *axiom.Controller) axiom.ActionResult {
+				var query = c.Params.Query
+				return axiom.Json(query) // Echo back the query as JSON
 			},
 		},
 		"hello": axiom.Action{
 			Method: "GET",
-			Handler: func(c *axiom.Controller) (int, error) {
-				http.ServeFile(c.Out, c.Request, "views/hello.html")
-				return http.StatusOK, nil
+			Handler: func(c *axiom.Controller) axiom.ActionResult {
+				return axiom.View("hello") // Should match view/hello.html
 			},
 		},
 	},

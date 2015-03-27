@@ -4,9 +4,7 @@
 
 package axiom
 
-import (
-	"net/http"
-)
+import "net/http"
 
 // Goes through the route table and
 // bind action handlers.

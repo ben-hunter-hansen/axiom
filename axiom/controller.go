@@ -2,6 +2,7 @@ package axiom
 
 import (
 	"net/http"
+	"strings"
 )
 
 // A Controller receives requests and determine which
@@ -24,11 +25,27 @@ type Controller struct {
 	ActionDefault string
 }
 
-// An Action is something a Controller is configured to handle
-//
-// 2. The actions request method.
-// 3. User defined handler.
-type Action struct {
-	Method  string
-	Handler func(*Controller) (int, error)
+// Provides the controller with request context and a corresponding writer
+func (c *Controller) Apply(w http.ResponseWriter, r *http.Request, p RequestParams) {
+	c.Out = w
+	c.Request = r
+	c.Params = p
+}
+
+// Checks for an action matching a URL.
+// Returns the action if found, else 404
+func (c *Controller) GetAction(routeUrl string, reqUrl string) Action {
+	routeUrl = strings.ToLower(routeUrl)
+	reqUrl = strings.ToLower(reqUrl)
+	for name, _ := range c.Actions {
+		fullPath := routeUrl + c.Name + "/" + name
+		if fullPath == reqUrl {
+			return c.Actions[name]
+		}
+	}
+	return Action{
+		Handler: func(c *Controller) ActionResult {
+			return View("404")
+		},
+	}
 }
