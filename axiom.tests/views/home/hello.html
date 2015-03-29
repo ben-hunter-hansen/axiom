@@ -5,7 +5,7 @@
 	<meta name="description" content="Sample hello world page." />
 	<meta name="referrer" content="always">
 	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
-
+	<link rel="stylesheet" href="/css/style.css">
 	<style>
 		#wrapper {
 			position: fixed;
@@ -25,6 +25,10 @@
 			top:35%;
 			left: 50%;
 			transform: translate(-50%,-50%);
+		}
+
+		.alignMiddle a, .alignMiddle button {
+			margin: 20px;
 		}
 
 		.alignBottom {
@@ -53,7 +57,11 @@
 				<a href="fetch?id=12345" class="titleText.messageText">
 					Gimme some JSON
 				</a>
-				<br />
+				<button onclick="jsTest()">
+					<span class="titleText.messageText">
+						JS Test
+					</span>
+				</button>
 				<a href="/" class="titleText.messageText">
 					Back to home
 				</a>
@@ -64,5 +72,6 @@
 				</span>
 			</div>
 		</div>
+		<script src="/js/test.js"></script>
 	</body>
 </html>

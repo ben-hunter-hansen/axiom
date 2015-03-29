@@ -4,19 +4,26 @@
 
 package axiom
 
-import "net/http"
+import (
+	"net/http"
+)
 
-// Goes through the route table and
-// bind action handlers.
-func Bind(r []Route) *http.ServeMux {
+func Init(a *AppConfiguration, r []Route) {
 	mux := http.NewServeMux()
+	a.AppDir.Update()
+
+	// Bind routes
 	for _, route := range r {
+		route.AppDir = &a.AppDir
 		mux.Handle(route.Url, route)
 	}
-	return mux
-}
 
-// (> o.o )>
-func Serve(mx *http.ServeMux) {
-	http.ListenAndServe(":8080", mx)
+	// Bind resources
+	for path, files := range a.AppDir.Resources {
+		resMap := NewResourceMap(path, files)
+		mux.Handle(resMap.Url, resMap)
+	}
+
+	// ( > o.o)> [app]
+	http.ListenAndServe(":8080", mux)
 }

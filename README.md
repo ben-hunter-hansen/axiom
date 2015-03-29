@@ -5,12 +5,11 @@
 
 This is a brand new pet project, only a few days old.
 
-So far, we are able to:
+What is included so far:
 
 * Define routes, controllers, handlers
-* Render views
-* Render JSON
-
+* Actions: View, JSON
+* Mapped resource directory
 
 ### Example
 - - - 
@@ -24,17 +23,10 @@ import (
 	"axiom.tests/config"
 )
 
-// Entry point of the app.
-// routes are defined under config/routes.go
-// controllers are defined under the controllers directory
-// e.g controllers/homecontroller.go
 func main() {
 
-	// Register route table
-	mux := axiom.Bind(config.RouteConfig)
-
-	// Run the app
-	axiom.Serve(mux)
+	// Start the app
+	axiom.Init(config.AppConfig, config.RouteConfig)
 }
 ```
 #### Example controller
@@ -54,20 +46,20 @@ var HomeController = &axiom.Controller{
 	Actions: map[string]axiom.Action{
 		"welcome": axiom.Action{
 			Method: "GET",
-			Handler: func(c *axiom.Controller) axiom.ActionResult {
+			Handler: func(c *axiom.Controller) axiom.ActionType {
 				return axiom.View("index") // Should match view/index.html
 			},
 		},
 		"fetch": axiom.Action{
 			Method: "GET",
-			Handler: func(c *axiom.Controller) axiom.ActionResult {
+			Handler: func(c *axiom.Controller) axiom.ActionType {
 				var query = c.Params.Query
 				return axiom.Json(query) // Echo back the query as JSON
 			},
 		},
 		"hello": axiom.Action{
 			Method: "GET",
-			Handler: func(c *axiom.Controller) axiom.ActionResult {
+			Handler: func(c *axiom.Controller) axiom.ActionType {
 				return axiom.View("hello") // Should match view/hello.html
 			},
 		},
@@ -91,6 +83,23 @@ var RouteConfig = []axiom.Route{
 		Name:       "Default",
 		Url:        "/",
 		Controller: controllers.HomeController,
+	},
+}
+```
+#### App configuration
+```
+package config
+
+import "axiom"
+
+// Default application configuration
+var AppConfig = &axiom.AppConfiguration{
+	AppDir: axiom.AppDirectory{
+		ViewRoot:     "views",
+		ResourceRoot: "resources",
+		Extensions: []string{
+			".htm", ".html", ".xhtml",
+		},
 	},
 }
 ```

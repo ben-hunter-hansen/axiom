@@ -44,7 +44,7 @@ func (c *Controller) GetAction(routeUrl string, reqUrl string) Action {
 		}
 	}
 	return Action{
-		Handler: func(c *Controller) ActionResult {
+		Handler: func(c *Controller) ActionType {
 			return View("404")
 		},
 	}

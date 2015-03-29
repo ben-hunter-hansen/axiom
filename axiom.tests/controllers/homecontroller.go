@@ -13,20 +13,20 @@ var HomeController = &axiom.Controller{
 	Actions: map[string]axiom.Action{
 		"welcome": axiom.Action{
 			Method: "GET",
-			Handler: func(c *axiom.Controller) axiom.ActionResult {
+			Handler: func(c *axiom.Controller) axiom.ActionType {
 				return axiom.View("index") // Should match view/index.html
 			},
 		},
 		"fetch": axiom.Action{
 			Method: "GET",
-			Handler: func(c *axiom.Controller) axiom.ActionResult {
+			Handler: func(c *axiom.Controller) axiom.ActionType {
 				var query = c.Params.Query
 				return axiom.Json(query) // Echo back the query as JSON
 			},
 		},
 		"hello": axiom.Action{
 			Method: "GET",
-			Handler: func(c *axiom.Controller) axiom.ActionResult {
+			Handler: func(c *axiom.Controller) axiom.ActionType {
 				return axiom.View("hello") // Should match view/hello.html
 			},
 		},

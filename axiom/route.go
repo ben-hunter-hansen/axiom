@@ -9,6 +9,7 @@ import (
 type Route struct {
 	Name       string
 	Url        string
+	AppDir     *AppDirectory
 	Controller *Controller
 }
 
@@ -27,14 +28,13 @@ func (r Route) ServeHTTP(w http.ResponseWriter, req *http.Request) {
 	} else {
 		act = r.Controller.GetAction(r.Url, req.URL.Path)
 	}
-	result := act.Handler(r.Controller)
+	handle := act.Handler(r.Controller)
 
-	// Need to define custom resource types ASAP
-	switch res := result.Resource.(type) {
-	case string: // Should be a view
-		http.ServeFile(w, req, res)
-	case []byte: // Should be json
-		w.Header().Set("Content-Type", "application/json")
-		w.Write(res)
+	switch action := handle.(type) {
+	case ViewAction:
+		http.ServeFile(w, req, r.AppDir.GetView(r.Controller.Name, action.Name))
+	case JsonAction:
+		w.Header().Set("Content-Type", "application/json") // test
+		w.Write(action.Data)
 	}
 }

@@ -1,28 +1,43 @@
 package axiom
 
+import (
+	"encoding/json"
+)
+
+type ActionType interface{}
+
 // An Action is something a Controller is configured to handle
 //
 // 2. The actions request method.
 // 3. User defined handler.
 type Action struct {
 	Method  string
-	Handler func(*Controller) ActionResult
+	Handler func(*Controller) ActionType
 }
 
-// The result of an actions handler function
-// 1. Error, obvious
-// 2. HTTP status code
-// 3. Resource, e.g a view, some json, etc
-type ActionResult struct {
-	Error    error
-	Status   int
-	Resource interface{}
+// An action associated with a view
+type ViewAction struct {
+	FullPath string
+	Name     string
 }
 
-func NewActionResult(status int, res interface{}, err error) ActionResult {
-	return ActionResult{
-		Error:    err,
-		Status:   status,
-		Resource: res,
+// An action associated with json
+type JsonAction struct {
+	Data []byte
+}
+
+// Returns a new action, of type view
+func View(v string) ActionType {
+	return ViewAction{
+		Name: v,
 	}
+}
+
+// Returns a new action, of type json
+func Json(v interface{}) ActionType {
+	dat, err := json.Marshal(v)
+	if err != nil {
+		//lol
+	}
+	return JsonAction{Data: dat}
 }
