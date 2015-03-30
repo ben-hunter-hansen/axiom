@@ -12,6 +12,8 @@ func Init(a *AppConfiguration, r []Route) {
 	mux := http.NewServeMux()
 	a.AppDir.Update()
 
+	Logger.Info.Println("Configuring HTTP handlers..")
+
 	// Bind routes
 	for _, route := range r {
 		route.AppDir = &a.AppDir
@@ -24,6 +26,7 @@ func Init(a *AppConfiguration, r []Route) {
 		mux.Handle(resMap.Url, resMap)
 	}
 
+	Logger.Info.Printf("Server starting on port: %d\n", 8080)
 	// ( > o.o)> [app]
 	http.ListenAndServe(":8080", mux)
 }

@@ -37,7 +37,7 @@ func View(v string) ActionType {
 func Json(v interface{}) ActionType {
 	dat, err := json.Marshal(v)
 	if err != nil {
-		//lol
+		Logger.Error.Printf("%s\n", err.Error())
 	}
 	return JsonAction{Data: dat}
 }

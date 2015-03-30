@@ -74,6 +74,6 @@ func (a *AppDirectory) Update() {
 	err := filepath.Walk(a.ViewRoot, a.viewWalker)
 	err = filepath.Walk(a.ResourceRoot, a.resWalker)
 	if err != nil {
-		//shut up compiler, I'll get to it
+		Logger.Error("%s\n", err.Error())
 	}
 }

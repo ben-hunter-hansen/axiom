@@ -10,6 +10,7 @@ What is included so far:
 * Define routes, controllers, handlers
 * Actions: View, JSON
 * Mapped resource directory
+* Logging system in the works
 
 ### Example
 - - - 

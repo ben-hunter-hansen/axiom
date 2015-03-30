@@ -19,6 +19,8 @@ type Route struct {
 //
 // TOOD: Need to find a smarter way to handle this mechanism
 func (r Route) ServeHTTP(w http.ResponseWriter, req *http.Request) {
+	Logger.Info.Printf("%s: %s <%s>\n", req.Method, req.URL.Path, req.Host)
+
 	r.Controller.Apply(w, req, RequestParams{
 		Query: req.URL.Query(),
 	})
